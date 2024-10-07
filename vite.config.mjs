@@ -14,7 +14,7 @@ const getManifest = defineManifest(async function getManifest(env) {
     name: isDev ? "[Dev] Follow it later" : "Follow it later",
     version: isDev ? "0.0.0" : "0.0.1",
     description: "Follow it later",
-    permissions: ["activeTab", "scripting"],
+    permissions: ["activeTab", "scripting", "storage"],
     background: {
       service_worker: "src/background.ts",
     },
