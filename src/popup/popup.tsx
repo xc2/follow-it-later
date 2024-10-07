@@ -1,26 +1,8 @@
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { SendForm } from "@/popup/send-form";
+import { InboxItem } from "@/types";
 import useSWR from "swr";
-// @ts-ignore
-import readScriptUrl from "../content/read.ts?script";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -35,58 +17,33 @@ export function Popup() {
       credentials: "include",
     });
     const data = await res.json();
-    return data.data;
+    return data.data as InboxItem[];
   });
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {},
+  const lastUsedInboxSWR = useSWR("inbox-last-used", async (key) => {
+    return chrome.storage.local.get(key).then((r) => r[key]);
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    const tab = await chrome.tabs.query({ active: true });
-    await chrome.scripting.executeScript({
-      target: { tabId: tab[0].id! },
-      files: [readScriptUrl],
-    });
-  }
   return (
-    <div className="px-5 py-6 min-h-96">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="inbox"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex items-center gap-3">
-                  <FormLabel>Inbox</FormLabel>
-                  <FormControl>
-                    <Select>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Choose a inbox" />
-                      </SelectTrigger>
-                      <SelectContent className="bottom-[0]" position="item-aligned">
-                        {inboxesSWR.data?.map((inbox) => {
-                          return (
-                            <SelectItem value={inbox.id} key={inbox.id}>
-                              {inbox.title}
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                </div>
-
-                <FormDescription>This is your public display name.</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit">Send to Follow</Button>
-        </form>
-      </Form>
-    </div>
+    <Card className="border-none rounded-none min-w-80">
+      <CardHeader>
+        <CardTitle>Send to Follow</CardTitle>
+        <CardDescription>
+          A readable version of this page will be sent to your Follow's inbox.
+        </CardDescription>
+      </CardHeader>
+      {!inboxesSWR.isLoading && !lastUsedInboxSWR.isLoading ? (
+        <SendForm inboxes={inboxesSWR.data!} defaultValues={{ inbox: lastUsedInboxSWR.data }} />
+      ) : (
+        <CardContent>
+          <div className="flex flex-col space-y-5">
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[50px] rounded-xl" />
+              <Skeleton className="h-10 w-[200px]" />
+            </div>
+            <Skeleton className="h-10 w-[150px]" />
+          </div>
+        </CardContent>
+      )}
+    </Card>
   );
 }
