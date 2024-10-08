@@ -18,7 +18,10 @@ jobs:
     uses: xc2/ghwf/.github/workflows/update-release.yaml@main
     if: startsWith(github.ref, 'refs/tags/')
     permissions:
+      id-token: write
       contents: write
+      attestations: write
     with:
       cache-key: ${{ needs.build.outputs.cache-key }}
       cache-path: ${{ needs.build.outputs.cache-path }}
+      provenance: true
