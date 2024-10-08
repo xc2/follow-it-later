@@ -110,8 +110,8 @@ export function SendForm({
               <div className="mt-3 w-full">
                 {!result.error ? (
                   <div>
-                    Page "{result.data?.result?.title}" was sent to inbox "
-                    {result.data?.inbox.title}" successfully.
+                    Page <strong>"{result.data?.result?.title}"</strong> has been sent to inbox{" "}
+                    <strong>"{result.data?.inbox.title}"</strong> successfully.
                   </div>
                 ) : (
                   <Alert variant="destructive">
