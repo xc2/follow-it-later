@@ -5,7 +5,8 @@
     "build": "vite build",
     "build:watch": "vite build --watch",
     "start": "vite dev",
-    "deploy": "rm -rf dist follow-it-later.zip && vite build && cd dist && zip -r ../follow-it-later.zip ."
+    "deploy": "rm -rf dist follow-it-later.zip && vite build && cd dist && zip -r ../follow-it-later.zip .",
+    "ci-deploy": "./.github/ci-deploy.bash"
   },
   "nano-staged": {
     "*.{js,ts,tsx,mjs,mts,css,json,cjs,cts}": "biome check --write --diagnostic-level=error --no-errors-on-unmatched"
