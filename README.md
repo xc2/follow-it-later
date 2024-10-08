@@ -3,7 +3,7 @@
 This is a Chrome extension that:
 
 1. Convert a page to readable content
-2. Send the readable content to your [https://follow.is](Follow)'s Inbox.
+2. Send the readable content to your [Follow](https://follow.is)'s Inbox.
 
 ## License
 
