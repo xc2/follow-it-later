@@ -39,7 +39,7 @@ export function SendForm({
   });
 
   const [send, result] = useAsync(async (values: z.infer<typeof formSchema>) => {
-    chrome.storage.local.set({ "inbox-last-used": values.inbox }).catch(() => {});
+    void chrome.storage.local.set({ "inbox-last-used": values.inbox });
     const result = await currentTabToInboxData();
     const inbox = inboxes.find((inbox) => inbox.id === values.inbox)!;
     await fetch("https://api.follow.is/inboxes/webhook", {

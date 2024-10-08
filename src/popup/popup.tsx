@@ -1,27 +1,25 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { handleFollowResponse, isFollowError } from "@/lib/follow";
+import { Login } from "@/popup/login";
 import { SendForm } from "@/popup/send-form";
 import { InboxItem } from "@/types";
 import useSWR from "swr";
-import { z } from "zod";
-
-const formSchema = z.object({
-  inbox: z.string(),
-});
 
 export function Popup() {
   const inboxesSWR = useSWR("inboxes", async (url) => {
-    const res = await fetch("https://api.follow.is/inboxes/list", {
-      method: "GET",
-      mode: "cors",
-      credentials: "include",
-    });
-    const data = await res.json();
-    return data.data as InboxItem[];
+    return handleFollowResponse<InboxItem[]>(
+      fetch("https://api.follow.is/inboxes/list", {
+        method: "GET",
+        mode: "cors",
+        credentials: "include",
+      })
+    );
   });
   const lastUsedInboxSWR = useSWR("inbox-last-used", async (key) => {
     return chrome.storage.local.get(key).then((r) => r[key]);
   });
+  const needLogin = isFollowError(inboxesSWR.error) && inboxesSWR.error.name === "AuthError";
 
   return (
     <Card className="border-none rounded-none min-w-80">
@@ -32,7 +30,13 @@ export function Popup() {
         </CardDescription>
       </CardHeader>
       {!inboxesSWR.isLoading && !lastUsedInboxSWR.isLoading ? (
-        <SendForm inboxes={inboxesSWR.data!} defaultValues={{ inbox: lastUsedInboxSWR.data }} />
+        needLogin ? (
+          <CardContent>
+            <Login />
+          </CardContent>
+        ) : (
+          <SendForm inboxes={inboxesSWR.data!} defaultValues={{ inbox: lastUsedInboxSWR.data }} />
+        )
       ) : (
         <CardContent>
           <div className="flex flex-col space-y-5">
