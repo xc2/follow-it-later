@@ -1,0 +1,27 @@
+name: Release
+on:
+  workflow_dispatch:
+  release:
+    types:
+      - published
+
+jobs:
+  build:
+    uses: xc2/ghwf/.github/workflows/pnpm-artifact.yaml@main
+    with:
+      script: ci-deploy
+      artifact-path: "*.zip"
+      artifact-name: pkg
+
+  update-release:
+    needs: build
+    uses: xc2/ghwf/.github/workflows/update-release.yaml@main
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
+    with:
+      cache-key: ${{ needs.build.outputs.cache-key }}
+      cache-path: ${{ needs.build.outputs.cache-path }}
+      provenance: true
