@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { currentTabToInboxData } from "@/lib/backend";
+import { handleFollowResponse } from "@/lib/follow";
 import { useAsync } from "@/lib/use-async";
 import { InboxItem } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,20 +40,22 @@ export function SendForm({
   });
 
   const [send, result] = useAsync(async (values: z.infer<typeof formSchema>) => {
-    void chrome.storage.local.set({ "inbox-last-used": values.inbox });
     const result = await currentTabToInboxData();
     const inbox = inboxes.find((inbox) => inbox.id === values.inbox)!;
-    await fetch("https://api.follow.is/inboxes/webhook", {
-      method: "POST",
-      mode: "cors",
-      credentials: "omit",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Follow-Secret": inbox.secret,
-        "X-Follow-Handle": inbox.id,
-      },
-      body: JSON.stringify(result),
-    });
+    void chrome.storage.local.set({ "inbox-last-used": inbox.id });
+    await handleFollowResponse(
+      fetch("https://api.follow.is/inboxes/webhook", {
+        method: "POST",
+        mode: "cors",
+        credentials: "omit",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Follow-Secret": inbox.secret,
+          "X-Follow-Handle": inbox.id,
+        },
+        body: JSON.stringify(result),
+      })
+    );
     return { result, inbox };
   });
   const onSubmit = (values: z.infer<typeof formSchema>) => send(values);
@@ -107,8 +110,8 @@ export function SendForm({
               <div className="mt-3 w-full">
                 {!result.error ? (
                   <div>
-                    Page "{result.data?.result.title}" was sent to inbox "{result.data?.inbox.title}
-                    " successfully.
+                    Page "{result.data?.result?.title}" was sent to inbox "
+                    {result.data?.inbox.title}" successfully.
                   </div>
                 ) : (
                   <Alert variant="destructive">

@@ -37,8 +37,12 @@ const getManifest = defineManifest(async function getManifest(env) {
 export default defineConfig({
   plugins: [react(), crx({ manifest: getManifest })],
   build: {
-    modulePreload: {
-      polyfill: false,
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        assetFileNames: "assets/[name][extname]",
+        chunkFileNames: "assets/[name].js",
+      },
     },
   },
   resolve: {
