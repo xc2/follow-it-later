@@ -17,6 +17,6 @@ fi
 echo "Building extension version $EXTENSION_VERSION..."
 
 rm -rf dist *.zip
-pnpm vite build
+env "EXTENSION_VERSION=$EXTENSION_VERSION" pnpm vite build
 cd dist
 zip -r "../follow-it-later.v${EXTENSION_VERSION}.zip" .
