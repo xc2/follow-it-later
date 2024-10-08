@@ -1,6 +1,7 @@
 import path from "node:path";
 import { crx, defineManifest } from "@crxjs/vite-plugin";
 import react from "@vitejs/plugin-react";
+import rollupPluginLicense from "rollup-plugin-license";
 import { defineConfig } from "vite";
 
 /** @typedef {import('vite').ConfigEnv} ConfigEnv */
@@ -39,6 +40,13 @@ export default defineConfig({
   build: {
     sourcemap: true,
     rollupOptions: {
+      plugins: [
+        rollupPluginLicense({
+          thirdParty: {
+            output: "dist/dependencies.txt",
+          },
+        }),
+      ],
       output: {
         assetFileNames: "assets/[name][extname]",
         chunkFileNames: "assets/[name].js",
