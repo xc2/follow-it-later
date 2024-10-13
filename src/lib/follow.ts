@@ -1,4 +1,5 @@
 import { destructPromise } from "@/lib/lang";
+import { FetchResponse } from "openapi-fetch";
 
 export interface FollowError extends Error {
   response: Response;
@@ -6,7 +7,7 @@ export interface FollowError extends Error {
   json: unknown;
 }
 
-function makeHttpError(
+export function makeHttpError(
   response: Response,
   { name, message, json }: { name?: FollowError["name"]; message?: string; json?: unknown } = {}
 ) {
@@ -21,10 +22,7 @@ function makeHttpError(
 export function isFollowError(err: unknown): err is FollowError {
   return err ? "response" in (err as any) : false;
 }
-export async function handleFollowResponse<T>(res: Response | PromiseLike<Response>): Promise<T> {
-  res = await res;
-  const [ok, dataOrErr] = await destructPromise(res.json());
-  const json = ok ? dataOrErr : undefined;
+export function handleFollowData<T>(json: { code: number; data: T }, res: Response): T {
   if (res.status === 401) {
     throw makeHttpError(res, { name: "AuthError", json });
   } else if (res.status === 400) {
@@ -35,8 +33,16 @@ export async function handleFollowResponse<T>(res: Response | PromiseLike<Respon
     throw makeHttpError(res, { name: "FollowError", json });
   } else if (json?.code > 0) {
     throw makeHttpError(res, { name: "FollowError", json });
-  } else if (!ok) {
-    throw makeHttpError(res, { name: "JSONError", message: "Cannot decode the response message." });
   }
   return json?.data;
+}
+export async function handleFollowResponse<T>(res: Response | PromiseLike<Response>): Promise<T> {
+  res = await res;
+  const [ok, dataOrErr] = await destructPromise(res.json());
+  const json = ok ? dataOrErr : undefined;
+  const data = handleFollowData<T>(json, res);
+  if (!ok) {
+    throw makeHttpError(res, { name: "JSONError", message: "Cannot decode the response message." });
+  }
+  return data;
 }

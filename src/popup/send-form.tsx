@@ -19,6 +19,7 @@ import {
 import { currentTabToInboxData } from "@/lib/backend";
 import { handleFollowResponse } from "@/lib/follow";
 import { useAsync } from "@/lib/use-async";
+import { follow, handleFollowResult } from "@/services/follow";
 import { InboxItem } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ExclamationTriangleIcon, PaperPlaneIcon, ReloadIcon } from "@radix-ui/react-icons";
@@ -43,17 +44,14 @@ export function SendForm({
     const result = await currentTabToInboxData();
     const inbox = inboxes.find((inbox) => inbox.id === values.inbox)!;
     void chrome.storage.local.set({ "inbox-last-used": inbox.id });
-    await handleFollowResponse(
-      fetch("https://api.follow.is/inboxes/webhook", {
-        method: "POST",
-        mode: "cors",
+    await handleFollowResult(
+      follow.POST("/inboxes/webhook", {
         credentials: "omit",
         headers: {
-          "Content-Type": "application/json",
           "X-Follow-Secret": inbox.secret,
           "X-Follow-Handle": inbox.id,
         },
-        body: JSON.stringify(result),
+        body: result,
       })
     );
     return { result, inbox };
