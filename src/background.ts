@@ -1,19 +1,27 @@
-declare const self: ServiceWorkerGlobalScope;
+import { baseUrl } from "@/gen/follow";
+import { Hono } from "hono";
+import { handle } from "hono/service-worker";
+import { StaleWhileRevalidate } from "workbox-strategies";
 
-import { StaleWhileRevalidate, Strategy } from "workbox-strategies";
+declare const self: ServiceWorkerGlobalScope;
 
 const cacheName = "extension-follow-it-later";
 
 void purgeOutdatedCaches();
 
-// type WorkboxPlugin = Strategy["plugins"][0];
+const app = new Hono({}).basePath("/internal");
+const handleEvent = handle(app);
 
 self.addEventListener("fetch", (event) => {
   const { request } = event;
-  // TODO introduce hono to handle routing
-  if (request.url === "https://api.follow.is/inboxes/list") {
-    event.respondWith(new StaleWhileRevalidate({ cacheName }).handle(event));
+  const url = new URL(request.url);
+  if (url.origin === baseUrl) {
+    if (url.pathname === "/inboxes/list") {
+      return event.respondWith(new StaleWhileRevalidate({ cacheName }).handle(event));
+    }
   }
+
+  return handleEvent(event);
 });
 
 async function purgeOutdatedCaches() {

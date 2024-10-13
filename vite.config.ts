@@ -1,14 +1,11 @@
-import path from "node:path";
+import * as path from "node:path";
 import { crx, defineManifest } from "@crxjs/vite-plugin";
 import react from "@vitejs/plugin-react";
 import rollupPluginLicense from "rollup-plugin-license";
 import { defineConfig } from "vite";
+import { FollowApiConfig } from "./scripts/follow-api.config";
 
-/** @typedef {import('vite').ConfigEnv} ConfigEnv */
-/** @typedef {import('@crxjs/vite-plugin').ManifestV3} ManifestV3 */
-
-/** */
-const getManifest = defineManifest(async function getManifest(env) {
+const getManifest = defineManifest(async (env) => {
   const isDev = env.mode === "development";
   const VERSION = process.env.EXTENSION_VERSION;
   if (!isDev && !VERSION) {
@@ -17,9 +14,15 @@ const getManifest = defineManifest(async function getManifest(env) {
   return {
     manifest_version: 3,
     name: isDev ? "[Dev] Follow it later" : "Follow it later",
-    version: isDev ? "0.0.0" : VERSION,
+    version: isDev ? "0.0.0" : VERSION!,
     description: "Send a page to the inbox of Follow to read and subscribe later.",
     permissions: ["activeTab", "scripting", "storage"],
+    /**
+     * exact url like `https://example.com/foo/bar` will be changed into `https://example.com/*` by Chrome
+     * If possible, we'd like add each exact url to `host_permissions` instead of `HOST/*`
+     */
+    host_permissions: [`${FollowApiConfig.root}/*`],
+    homepage_url: "https://tldr.ws/followit",
     background: {
       service_worker: "src/background.ts",
     },
@@ -34,7 +37,6 @@ const getManifest = defineManifest(async function getManifest(env) {
   };
 });
 
-/** */
 export default defineConfig({
   plugins: [react(), crx({ manifest: getManifest })],
   build: {

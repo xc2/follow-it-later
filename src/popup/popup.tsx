@@ -2,23 +2,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { handleFollowResponse, isFollowError } from "@/lib/follow";
+import { isFollowError } from "@/lib/follow";
 import { Login } from "@/popup/login";
 import { SendForm } from "@/popup/send-form";
-import { InboxItem } from "@/types";
+import { follow, handleFollowResult } from "@/services/follow";
 import { Pencil2Icon, PlusIcon } from "@radix-ui/react-icons";
 import { useMemo } from "react";
 import useSWR from "swr";
 
 export function Popup() {
   const inboxesSWR = useSWR("inboxes", async (url) => {
-    return handleFollowResponse<InboxItem[]>(
-      fetch("https://api.follow.is/inboxes/list", {
-        method: "GET",
-        mode: "cors",
-        credentials: "include",
-      })
-    );
+    return handleFollowResult(follow.GET("/inboxes/list"));
   });
   const lastUsedInboxSWR = useSWR("inbox-last-used", async (key) => {
     return chrome.storage.local.get(key).then((r) => r[key]);
