@@ -14,6 +14,14 @@ export const PutSettings = createRoute({
   request: { body: req(SettingsSchema) },
   responses: res(SettingsSchema),
 });
+export const SendPage = createRoute({
+  method: "post",
+  path: "/inbox/{inboxId}/tab/{tabId}",
+  request: {
+    params: z.object({ inboxId: z.string(), tabId: z.number() }),
+  },
+  responses: res(z.object({})),
+});
 
 function res<T extends ZodType<unknown>>(schema: T) {
   return {

@@ -1,14 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { isFollowError } from "@/lib/follow";
 import { Login } from "@/popup/login";
-import { SendForm } from "@/popup/send-form";
+import { SettingsForm } from "@/popup/settings";
 import { follow, handleFollowResult } from "@/services/follow";
 import { handleInternalResult, internal } from "@/services/internal";
 import { Pencil2Icon, PlusIcon } from "@radix-ui/react-icons";
-import { useMemo } from "react";
 import useSWR from "swr";
 
 export function Popup() {
@@ -18,21 +17,14 @@ export function Popup() {
   const settingsSWR = useSWR("settings", async (key) => {
     return handleInternalResult(internal.GET("/settings"));
   });
-  const defaultInbox = settingsSWR.data?.DefaultInbox;
   const needLogin = isFollowError(inboxesSWR.error) && inboxesSWR.error.name === "AuthError";
-  const lastUsedInbox = useMemo(() => {
-    return inboxesSWR.data?.find((v) => v.id === defaultInbox)?.id;
-  }, [inboxesSWR.data, defaultInbox]);
 
   return (
     <TooltipProvider>
       <div className="min-w-96">
         <Card className="border-none rounded-none shadow-none">
           <CardHeader>
-            <CardTitle>Send to Follow</CardTitle>
-            <CardDescription>
-              A readable version of this page will be sent to your Follow's inbox.
-            </CardDescription>
+            <CardTitle className="text-xl">Settings</CardTitle>
           </CardHeader>
           {!inboxesSWR.isLoading && !settingsSWR.isLoading ? (
             needLogin ? (
@@ -40,7 +32,7 @@ export function Popup() {
                 <Login size="sm" purpose="Log in Follow is required to retrieve the inbox list." />
               </CardContent>
             ) : inboxesSWR?.data?.length ? (
-              <SendForm inboxes={inboxesSWR.data!} defaultValues={{ inbox: lastUsedInbox }} />
+              <SettingsForm inboxes={inboxesSWR.data!} defaultValues={settingsSWR.data || {}} />
             ) : (
               <CardContent>
                 <Button asChild type="button" size="sm">

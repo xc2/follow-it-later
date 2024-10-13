@@ -1,9 +1,11 @@
+import { SettingsSchema } from "@/backend/entities";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardFooter } from "@/components/ui/card";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -16,47 +18,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { currentTabToInboxData } from "@/lib/backend";
 import { useAsync } from "@/lib/use-async";
-import { follow, handleFollowResult } from "@/services/follow";
 import { internal } from "@/services/internal";
 import { InboxItem } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ExclamationTriangleIcon, PaperPlaneIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { ExclamationTriangleIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { SaveAllIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const formSchema = z.object({
-  inbox: z.string(),
-});
-type FormSchema = z.infer<typeof formSchema>;
+type FormSchema = z.infer<typeof SettingsSchema>;
 
-export function SendForm({
+export function SettingsForm({
   inboxes,
   defaultValues,
 }: { inboxes: InboxItem[]; defaultValues?: Partial<FormSchema> }) {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(SettingsSchema),
     defaultValues,
   });
 
-  const [send, result] = useAsync(async (values: z.infer<typeof formSchema>) => {
-    const result = await currentTabToInboxData();
-    const inbox = inboxes.find((inbox) => inbox.id === values.inbox)!;
-    void internal.PUT("/settings", { body: { DefaultInbox: inbox.id } });
-    await handleFollowResult(
-      follow.POST("/inboxes/webhook", {
-        credentials: "omit",
-        headers: {
-          "X-Follow-Secret": inbox.secret,
-          "X-Follow-Handle": inbox.id,
-        },
-        body: result,
-      })
-    );
-    return { result, inbox };
+  const [save, result] = useAsync(async (values: FormSchema) => {
+    await internal.PUT("/settings", { body: values });
   });
-  const onSubmit = (values: z.infer<typeof formSchema>) => send(values);
+  const onSubmit = (values: FormSchema) => save(values);
   const { isSubmitting, isLoading, isValid, isSubmitSuccessful, isSubmitted, disabled } =
     form.formState;
   return (
@@ -65,10 +50,10 @@ export function SendForm({
         <CardContent>
           <FormField
             control={form.control}
-            name="inbox"
+            name="DefaultInbox"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Inbox</FormLabel>
+                <FormLabel>Default Inbox</FormLabel>
                 <FormControl>
                   <Select {...field} defaultValue={field.value} onValueChange={field.onChange}>
                     <SelectTrigger className="w-[180px]">
@@ -88,6 +73,10 @@ export function SendForm({
                     </SelectContent>
                   </Select>
                 </FormControl>
+                <FormDescription>
+                  Pages will be sent to the selected inbox by default when you click the extension
+                  icon or the context menu item.
+                </FormDescription>
 
                 <FormMessage />
               </FormItem>
@@ -96,26 +85,23 @@ export function SendForm({
         </CardContent>
         <CardFooter>
           <div className="w-full">
-            <Button type="submit" disabled={isSubmitting || isLoading || disabled}>
+            <Button size="sm" type="submit" disabled={isSubmitting || isLoading || disabled}>
               {isSubmitting ? (
                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
               ) : (
-                <PaperPlaneIcon className="mr-2 h-4 w-4" />
+                <SaveAllIcon className="mr-2 h-4 w-4" />
               )}
-              Send to Follow
+              Save
             </Button>
-            {!(!result.loading && (result.data || result.error)) || (
+            {!(!result.loading && (result.dataReady || result.error)) || (
               <div className="mt-3 w-full">
                 {!result.error ? (
-                  <div>
-                    Page <strong>"{result.data?.result?.title}"</strong> has been sent to inbox{" "}
-                    <strong>"{result.data?.inbox.title}"</strong> successfully.
-                  </div>
+                  <div>Saved</div>
                 ) : (
                   <Alert variant="destructive">
                     <ExclamationTriangleIcon className="h-4 w-4" />
 
-                    <AlertTitle>Sending Failed</AlertTitle>
+                    <AlertTitle>Save Failed</AlertTitle>
                     <AlertDescription>{result.error?.message}</AlertDescription>
                   </Alert>
                 )}

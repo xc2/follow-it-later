@@ -39,7 +39,7 @@ const getManifest = defineManifest(async (env) => {
 });
 
 export default defineConfig({
-  plugins: [react(), crx({ manifest: getManifest })],
+  plugins: [react({}), crx({ manifest: getManifest, contentScripts: { injectCss: true } })],
   clearScreen: false,
 
   build: {

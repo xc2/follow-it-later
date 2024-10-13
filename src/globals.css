@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+  :root,
+  :host {
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
 
@@ -46,7 +47,8 @@
     --chart-5: 27 87% 67%;
   }
 
-  .dark {
+  .dark,
+  :host-context(html.dark) :host {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
 
