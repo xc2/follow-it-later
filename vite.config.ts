@@ -16,7 +16,7 @@ const getManifest = defineManifest(async (env) => {
     name: isDev ? "[Dev] Follow it later" : "Follow it later",
     version: isDev ? "0.0.0" : VERSION!,
     description: "Send a page to the inbox of Follow to read and subscribe later.",
-    permissions: ["activeTab", "scripting", "storage"],
+    permissions: ["activeTab", "scripting", "storage", "contextMenus"],
     /**
      * exact url like `https://example.com/foo/bar` will be changed into `https://example.com/*` by Chrome
      * If possible, we'd like add each exact url to `host_permissions` instead of `HOST/*`
@@ -32,16 +32,22 @@ const getManifest = defineManifest(async (env) => {
       128: "icons/icon-128.png",
     },
     action: {
-      default_popup: "src/popup.html",
+      default_title: "Follow it later",
+      // default_popup: "src/popup.html",
     },
   };
 });
 
 export default defineConfig({
   plugins: [react(), crx({ manifest: getManifest })],
+  clearScreen: false,
+
   build: {
     sourcemap: true,
     rollupOptions: {
+      input: {
+        popup: "@/popup.html",
+      },
       plugins: [
         rollupPluginLicense({
           thirdParty: {

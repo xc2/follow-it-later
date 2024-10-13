@@ -6,6 +6,7 @@ import { isFollowError } from "@/lib/follow";
 import { Login } from "@/popup/login";
 import { SendForm } from "@/popup/send-form";
 import { follow, handleFollowResult } from "@/services/follow";
+import { handleInternalResult, internal } from "@/services/internal";
 import { Pencil2Icon, PlusIcon } from "@radix-ui/react-icons";
 import { useMemo } from "react";
 import useSWR from "swr";
@@ -14,13 +15,14 @@ export function Popup() {
   const inboxesSWR = useSWR("inboxes", async (url) => {
     return handleFollowResult(follow.GET("/inboxes/list"));
   });
-  const lastUsedInboxSWR = useSWR("inbox-last-used", async (key) => {
-    return chrome.storage.local.get(key).then((r) => r[key]);
+  const settingsSWR = useSWR("settings", async (key) => {
+    return handleInternalResult(internal.GET("/settings"));
   });
+  const defaultInbox = settingsSWR.data?.DefaultInbox;
   const needLogin = isFollowError(inboxesSWR.error) && inboxesSWR.error.name === "AuthError";
   const lastUsedInbox = useMemo(() => {
-    return inboxesSWR.data?.find((v) => v.id === lastUsedInboxSWR.data)?.id;
-  }, [inboxesSWR.data, lastUsedInboxSWR.data]);
+    return inboxesSWR.data?.find((v) => v.id === defaultInbox)?.id;
+  }, [inboxesSWR.data, defaultInbox]);
 
   return (
     <TooltipProvider>
@@ -32,7 +34,7 @@ export function Popup() {
               A readable version of this page will be sent to your Follow's inbox.
             </CardDescription>
           </CardHeader>
-          {!inboxesSWR.isLoading && !lastUsedInboxSWR.isLoading ? (
+          {!inboxesSWR.isLoading && !settingsSWR.isLoading ? (
             needLogin ? (
               <CardContent>
                 <Login size="sm" purpose="Log in Follow is required to retrieve the inbox list." />

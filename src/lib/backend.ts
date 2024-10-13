@@ -2,11 +2,9 @@ import { queryActiveTab } from "@/lib/chrome";
 import { readScriptUrl } from "@/lib/urls";
 import { InboxEntryInput } from "@/types";
 
-export async function currentTabToInboxData(): Promise<InboxEntryInput> {
-  const tab = await queryActiveTab();
-
+export async function tabToInboxData(tabId: number): Promise<InboxEntryInput> {
   const [result] = await chrome.scripting.executeScript({
-    target: { tabId: tab?.id! },
+    target: { tabId },
     func: async (readScriptUrl) => {
       function __vite__injectQuery(a: any) {
         return a;
@@ -22,4 +20,8 @@ export async function currentTabToInboxData(): Promise<InboxEntryInput> {
     args: [readScriptUrl],
   });
   return result.result;
+}
+export async function currentTabToInboxData(): Promise<InboxEntryInput> {
+  const tab = await queryActiveTab();
+  return tabToInboxData(tab?.id!);
 }

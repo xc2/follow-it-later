@@ -17,9 +17,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { currentTabToInboxData } from "@/lib/backend";
-import { handleFollowResponse } from "@/lib/follow";
 import { useAsync } from "@/lib/use-async";
 import { follow, handleFollowResult } from "@/services/follow";
+import { internal } from "@/services/internal";
 import { InboxItem } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ExclamationTriangleIcon, PaperPlaneIcon, ReloadIcon } from "@radix-ui/react-icons";
@@ -43,7 +43,7 @@ export function SendForm({
   const [send, result] = useAsync(async (values: z.infer<typeof formSchema>) => {
     const result = await currentTabToInboxData();
     const inbox = inboxes.find((inbox) => inbox.id === values.inbox)!;
-    void chrome.storage.local.set({ "inbox-last-used": inbox.id });
+    void internal.PUT("/settings", { body: { DefaultInbox: inbox.id } });
     await handleFollowResult(
       follow.POST("/inboxes/webhook", {
         credentials: "omit",
