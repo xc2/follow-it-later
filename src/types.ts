@@ -1,4 +1,4 @@
-import { paths } from "@/gen/follow";
+import type { paths } from "@/gen/follow";
 
 export type InboxEntryInput = NonNullable<
   paths["/inboxes/webhook"]["post"]["requestBody"]

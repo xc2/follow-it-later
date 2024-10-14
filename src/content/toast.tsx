@@ -46,7 +46,7 @@ export async function toast(
   const { toast: _showToast } = await import("sonner");
   const showToast = _showToast[data?.type || "info"] || _showToast;
   return showToast(message, {
-    position: "top-right",
+    position: "top-center",
     ...data,
   });
 }

@@ -35,13 +35,17 @@
     "rules": {
       "correctness": {
         "useExhaustiveDependencies": "off",
-        "noEmptyPattern": "off"
+        "noEmptyPattern": "off",
+        "noUnusedImports": {}
       },
       "a11y": {
-        "useKeyWithClickEvents": "off"
+        "useKeyWithClickEvents": "off",
+        "useSemanticElements": "off"
       },
       "style": {
-        "all": false
+        "recommended": false,
+        "useImportType": {},
+        "useExportType": {}
       },
       "complexity": {
         "noForEach": "warn",

@@ -7,7 +7,7 @@ export type UseAsyncState<FN extends (...args: any[]) => PromiseLike<any>> = {
   loading: boolean;
 } & (
   | { dataReady: false; data: null; error: any }
-  | { dataReady: true; data: PromiseDataType<ReturnType<FN>>; error: null }
+  | { dataReady: number; data: PromiseDataType<ReturnType<FN>>; error: null }
 );
 export type UseAsyncResponse<FN extends (...args: any[]) => PromiseLike<any>> = {
   cancelled: boolean;
@@ -48,7 +48,7 @@ export function useAsync<FN extends (...args: any[]) => PromiseLike<any>>(fn: FN
       if (cancelled) {
         return;
       }
-      setState({ dataReady: true, data, error, loading: false });
+      setState({ dataReady: Date.now(), data, error, loading: false });
     });
     return p;
   });

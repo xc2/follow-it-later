@@ -2,7 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { basename, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { OpenAPIHono } from "@hono/zod-openapi";
-import openapiTS, { astToString, OpenAPI3 } from "openapi-typescript";
+import openapiTS, { astToString, type OpenAPI3 } from "openapi-typescript";
 import * as r from "../src/backend/routes";
 import { InternalApiConfig } from "./internal-api.config";
 

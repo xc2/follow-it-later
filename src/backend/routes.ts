@@ -1,6 +1,6 @@
-import { SettingsSchema } from "@/backend/entities";
-import { RouteConfig, createRoute, z } from "@hono/zod-openapi";
-import { ZodType } from "zod";
+import { ErrorSchema, InboxItemSchema, SettingsSchema } from "@/backend/entities";
+import { type RouteConfig, createRoute, z } from "@hono/zod-openapi";
+import type { ZodType } from "zod";
 
 export const GetSettings = createRoute({
   method: "get",
@@ -11,16 +11,27 @@ export const GetSettings = createRoute({
 export const PutSettings = createRoute({
   method: "put",
   path: "/settings",
-  request: { body: req(SettingsSchema) },
+  request: { body: req(SettingsSchema.partial()) },
   responses: res(SettingsSchema),
 });
 export const SendPage = createRoute({
   method: "post",
   path: "/inbox/{inboxId}/tab/{tabId}",
   request: {
-    params: z.object({ inboxId: z.string(), tabId: z.number() }),
+    params: z.object({ inboxId: z.string(), tabId: z.number().or(z.string()) }),
+    query: z.object({ mute: z.enum(["1", "0"]).optional() }),
   },
   responses: res(z.object({})),
+});
+export const GetInboxes = createRoute({
+  method: "get",
+  path: "/inboxes",
+  responses: res(z.array(InboxItemSchema)),
+});
+export const RefreshInboxes = createRoute({
+  method: "put",
+  path: "/inboxes",
+  responses: res(z.array(InboxItemSchema)),
 });
 
 function res<T extends ZodType<unknown>>(schema: T) {
@@ -31,6 +42,10 @@ function res<T extends ZodType<unknown>>(schema: T) {
       },
       description: schema.description || "",
     },
+    ...[400, 401, 403, 404, 500].reduce((acc, code) => {
+      acc[code] = { description: "", content: { "application/json": { schema: ErrorSchema } } };
+      return acc;
+    }, {} as any),
   } satisfies RouteConfig["responses"];
 }
 function req<T extends ZodType<unknown>>(schema: T) {

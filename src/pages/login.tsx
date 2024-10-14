@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from "@/components/ui/button";
+import { Button, type ButtonProps } from "@/components/ui/button";
 import { AvatarIcon } from "@radix-ui/react-icons";
 
 export function Login({ purpose, ...props }: { purpose: string } & ButtonProps) {

@@ -1,4 +1,4 @@
-import { Export } from "@/content/read";
+import type { Export } from "@/content/read";
 import { getContentClient } from "@/lib/chrome/call-content";
 import { readModuleUrl } from "@/lib/urls";
 
