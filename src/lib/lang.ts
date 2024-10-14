@@ -23,3 +23,7 @@ export async function destructPromise<Data, Err extends Error = Error>(
     return [false, e as Err];
   }
 }
+
+export function isPromiseLike<T>(p: unknown): p is PromiseLike<T> {
+  return Boolean(p && typeof (p as any)?.then === "function");
+}

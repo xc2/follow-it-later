@@ -27,3 +27,5 @@ export function getInboxData(info?: ReaderInfo | false): InboxEntryInput {
     guid: crypto.randomUUID(),
   };
 }
+
+export type Export = { getReaderInfo: typeof getReaderInfo; getInboxData: typeof getInboxData };

@@ -1,6 +1,13 @@
-// @ts-ignore
-import _readScriptLoaderUrl from "../content/read.ts?script";
+import logoUrl from "../../icons/icon-128.png?url";
+import _readModuleUrl from "../content/read.ts?script&module";
+import _toastModuleUrl from "../content/toast.tsx?script&module";
 
-export const readScriptUrl = chrome.runtime.getURL(_readScriptLoaderUrl.replace(/-loader/, ""));
+export const readModuleUrl = chrome.runtime.getURL(_readModuleUrl);
+export const toastModuleUrl = chrome.runtime.getURL(_toastModuleUrl);
 
-export const readScriptLoaderUrl = chrome.runtime.getURL(_readScriptLoaderUrl);
+export const actionPage = chrome.runtime.getURL("src/popup.html");
+
+export const preambleCodeUrl = chrome.runtime.getURL("vendor/crx-client-preamble.js");
+export const viteClientUrl = chrome.runtime.getURL("vendor/vite-client.js");
+
+export { logoUrl };
