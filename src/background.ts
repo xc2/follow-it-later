@@ -1,14 +1,15 @@
 import { app } from "@/backend/app";
-import { getInboxById, sendToInbox } from "@/backend/inbox";
-import { getSettings, onSettings } from "@/backend/settings";
+import { defaultInboxAtom } from "@/backend/atoms";
+import { sendToInbox } from "@/backend/inbox";
 import { baseUrl as FollowBaseUrl } from "@/gen/follow";
 import { baseUrl as InternalBaseUrl } from "@/gen/internal";
 import { createContextMenu } from "@/lib/chrome/context-menu";
 import { actionPage } from "@/lib/urls";
-import { InboxItem } from "@/types";
-import { Hono } from "hono";
+import type { InboxItem } from "@/types";
+import type { Hono } from "hono";
 import { handle } from "hono/service-worker";
 import { StaleWhileRevalidate } from "workbox-strategies";
+import { container } from "./backend/container";
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -44,7 +45,7 @@ const FollowMenuItem = createContextMenu<{ inbox: InboxItem }>({
   onclick: async (info, tab) => {
     const inbox = info.data?.inbox!;
     const tabId = tab?.id!;
-    await sendToInbox({ inbox, tabId });
+    await sendToInbox({ inboxId: inbox.id, tabId });
   },
 });
 
@@ -66,28 +67,22 @@ const ActionMenuItem = createContextMenu({
 });
 ActionMenuItem.show();
 
-onSettings(
-  ["DefaultInbox"],
-  async ({ DefaultInbox }) => {
-    const inbox = await getInboxById(DefaultInbox);
-    if (inbox) {
-      FollowMenuItem.show({ data: { inbox }, title: `Send to Inbox "${inbox.title}"` });
-      chrome.action.setPopup({ popup: "" });
-      chrome.action.setTitle({ title: `Send to Inbox "${inbox.title}"` });
-    } else {
-      chrome.action.setPopup({ popup: actionPage });
-      chrome.action.setTitle({ title: `Follow it later` });
-      FollowMenuItem.hide();
-    }
-  },
-  true
-);
-
+container.sub(defaultInboxAtom, async () => {
+  const inbox = container.get(defaultInboxAtom);
+  if (inbox) {
+    FollowMenuItem.show({ data: { inbox }, title: `Send to Inbox "${inbox.title}"` });
+    chrome.action.setPopup({ popup: "" });
+    chrome.action.setTitle({ title: `Send to Inbox "${inbox.title}"` });
+  } else {
+    chrome.action.setPopup({ popup: actionPage });
+    chrome.action.setTitle({ title: `Follow it later` });
+    FollowMenuItem.hide();
+  }
+});
 chrome.action.onClicked.addListener(async (tab) => {
-  const { DefaultInbox } = await getSettings(["DefaultInbox"]);
-  const inbox = await getInboxById(DefaultInbox);
+  const inbox = container.get(defaultInboxAtom);
   if (!inbox) {
     return showPopup();
   }
-  void sendToInbox({ inbox, tabId: tab.id! });
+  void sendToInbox({ inboxId: inbox.id, tabId: tab.id! });
 });

@@ -2,7 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { basename, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pick } from "lodash-es";
-import openapiTS, { astToString, OpenAPI3, PathsObject } from "openapi-typescript";
+import openapiTS, { astToString, type OpenAPI3, type PathsObject } from "openapi-typescript";
 import { FollowApiConfig } from "./follow-api.config";
 
 const doc = (await (await fetch(FollowApiConfig.spec)).json()) as OpenAPI3;

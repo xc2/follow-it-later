@@ -1,4 +1,4 @@
-import { InboxEntryInput } from "@/types";
+import type { InboxEntryInput } from "@/types";
 import { Readability } from "@mozilla/readability";
 import DOMPurify from "dompurify";
 

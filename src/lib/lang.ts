@@ -1,3 +1,7 @@
+export function skipNil<T>(v: T | undefined | null): v is T {
+  return v !== undefined && v !== null;
+}
+
 export function addProperties<T, O extends Record<PropertyKey, unknown>>(
   original: T,
   add: O

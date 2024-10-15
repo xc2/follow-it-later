@@ -1,5 +1,4 @@
 import { destructPromise } from "@/lib/lang";
-import { FetchResponse } from "openapi-fetch";
 
 export interface FollowError extends Error {
   response: Response;

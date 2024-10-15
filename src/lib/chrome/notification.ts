@@ -31,7 +31,6 @@ export function withNotification<T>({
       }, 2000);
     },
     async (e) => {
-      console.error(e);
       const id = await pid;
       const message = typeof fail === "function" ? fail(e) : fail;
       void t.toast(title, {

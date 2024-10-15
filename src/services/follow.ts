@@ -1,6 +1,6 @@
-import { baseUrl, paths } from "@/gen/follow";
+import { baseUrl, type paths } from "@/gen/follow";
 import { handleFollowData, makeHttpError } from "@/lib/follow";
-import createClient, { FetchResponse } from "openapi-fetch";
+import createClient, { type FetchResponse } from "openapi-fetch";
 const mani = chrome.runtime.getManifest();
 
 export const follow = createClient<paths>({

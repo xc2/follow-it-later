@@ -1,22 +1,20 @@
+import { inboxesAtom } from "@/backend/atoms";
+import { container } from "@/backend/container";
 import { readClient } from "@/content/read.backend";
 import { withNotification } from "@/lib/chrome/notification";
-import { follow } from "@/services/follow";
-import { InboxItem } from "@/types";
+import { follow, handleFollowResult } from "@/services/follow";
 
-export async function getInboxById(id: string | undefined) {
-  if (!id) return;
-  const { data: inboxes } = await follow.GET("/inboxes/list", {});
-  return inboxes?.data?.find((v) => v.id === id);
-}
 export async function sendToInbox({
-  inbox,
+  inboxId,
   tabId,
   mute,
 }: {
-  inbox: InboxItem;
+  inboxId: string;
   tabId: number;
   mute?: boolean;
 }) {
+  const inbox = container.get(inboxesAtom)?.find((v) => v.id === inboxId);
+
   return withNotification({
     tabId: tabId,
     title: `Send to Inbox "${inbox?.title}"`,
@@ -25,15 +23,25 @@ export async function sendToInbox({
     disabled: mute,
     handler: async () => {
       const payload = await readClient.for(tabId).getInboxData();
-      const result = await follow.POST("/inboxes/webhook", {
-        credentials: "omit",
-        headers: {
-          "X-Follow-Secret": inbox?.secret,
-          "X-Follow-Handle": inbox?.id,
-        },
-        body: payload,
-      });
-      return { payload, result };
+      if (import.meta.env.DEV) {
+        await new Promise((resolve, reject) =>
+          setTimeout(Math.random() > 0.5 ? resolve : reject, 1000, new Error("Test error"))
+        );
+      } else {
+        await handleFollowResult(
+          follow.POST("/inboxes/webhook", {
+            credentials: "omit",
+            headers: {
+              "X-Follow-Secret": inbox?.secret,
+              "X-Follow-Handle": inbox?.id,
+            },
+            body: payload,
+          })
+        );
+      }
+
+      const { secret, ..._inbox } = inbox || {};
+      return { payload, inbox: _inbox };
     },
   });
 }
