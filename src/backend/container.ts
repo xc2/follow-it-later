@@ -1,9 +1,8 @@
-import { inboxesAtom, settingsAtom } from "@/backend/atoms";
+import { settingsAtom } from "@/backend/atoms";
+import { authStateAtom } from "@/backend/atoms/follow-client";
 import { createStore } from "jotai";
 
 export const container = createStore();
 container.sub(settingsAtom, () => {});
 
-container.sub(inboxesAtom, () => {
-  console.log("inboxesAtom changed", container.get(inboxesAtom));
-});
+container.sub(authStateAtom, () => {});

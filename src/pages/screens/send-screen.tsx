@@ -1,10 +1,14 @@
 import type { InboxItem } from "@/backend/entities";
 import { AsyncButton } from "@/components/button";
 import { Button } from "@/components/ui/button";
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollBar } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { queryActiveTab } from "@/lib/chrome";
 import { cn } from "@/lib/utils";
+import { Login } from "@/pages/login";
+import { useAuthState } from "@/pages/swr/auth-state";
 import { useInboxes } from "@/pages/swr/inbox";
 import { useSettings } from "@/pages/swr/settings";
 import { handleInternalResult, internal } from "@/services/internal";
@@ -79,26 +83,11 @@ function SendingButton({ item }: { item: InboxItem }) {
     </AsyncButton>
   );
 }
-export function SendScreenActions() {
-  const [inboxesSWR, inboxesSrv] = useInboxes();
-  return (
-    <div>
-      <AsyncButton
-        size="sm"
-        type="button"
-        variant="default"
-        handler={() => inboxesSrv.refresh()}
-        start={<SymbolIcon className="size-4" />}
-      >
-        Refresh Inboxes
-      </AsyncButton>
-    </div>
-  );
-}
 
 export function SendScreen() {
   const [inboxesSWR, inboxesSrv] = useInboxes();
   const [settingsSWR] = useSettings();
+  const [authSWR] = useAuthState();
 
   const { LastUsedInbox, DefaultInbox } = settingsSWR.data || {};
   const sortedInboxes = useMemo(() => {
@@ -112,23 +101,66 @@ export function SendScreen() {
       }
     });
   }, [inboxesSWR.data, LastUsedInbox, DefaultInbox]);
+  const authState = authSWR.data?.logged;
+
   return (
-    <div>
-      <ScrollArea className="max-h-52 -mr-4 pr-4">
-        <ScrollAreaViewport className="max-h-52">
-          <ul className="flex flex-col gap-3">
-            {sortedInboxes.map((item) => {
-              return (
-                <m.li layout key={item.id}>
-                  <SendingButton item={item} />
-                </m.li>
-              );
-            })}
-          </ul>
-        </ScrollAreaViewport>
-        <ScrollBar />
-        <ScrollAreaCorner />
-      </ScrollArea>
-    </div>
+    <>
+      <CardHeader>
+        <div className="flex items-center">
+          <CardTitle className="text-xl">Send to Inbox</CardTitle>
+          <div className="ml-auto">
+            {authState === false && sortedInboxes.length > 0 ? (
+              <Login purpose="" />
+            ) : inboxesSWR.isLoading || authSWR.isLoading || authState === false ? null : (
+              <AsyncButton
+                size="sm"
+                type="button"
+                variant="default"
+                handler={() => inboxesSrv.refresh()}
+                start={<SymbolIcon className="size-4" />}
+              >
+                Refresh Inboxes
+              </AsyncButton>
+            )}
+          </div>
+        </div>
+        {sortedInboxes.length > 0 && (
+          <CardDescription>
+            A readable version of this page will be sent to your Follow's inbox.
+          </CardDescription>
+        )}
+      </CardHeader>
+      <CardContent>
+        {sortedInboxes.length > 0 ? (
+          <ScrollArea className="max-h-52 -mr-4 pr-4">
+            <ScrollAreaViewport className="max-h-52">
+              <ul className="flex flex-col gap-3">
+                {sortedInboxes.map((item) => {
+                  return (
+                    <m.li layout key={item.id}>
+                      <SendingButton item={item} />
+                    </m.li>
+                  );
+                })}
+              </ul>
+            </ScrollAreaViewport>
+            <ScrollBar />
+            <ScrollAreaCorner />
+          </ScrollArea>
+        ) : inboxesSWR.isLoading || authSWR.isLoading ? (
+          <div className="flex flex-col space-y-5">
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[50px] rounded-xl" />
+              <Skeleton className="h-10 w-[200px]" />
+            </div>
+            <Skeleton className="h-10 w-[150px]" />
+          </div>
+        ) : authState === false ? (
+          <Login purpose="Log in Follow is required to retrieve the inbox list." />
+        ) : sortedInboxes.length === 0 ? (
+          <div className="flex flex-col space-y-5"></div>
+        ) : null}
+      </CardContent>
+    </>
   );
 }

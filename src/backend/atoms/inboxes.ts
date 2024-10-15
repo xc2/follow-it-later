@@ -1,14 +1,15 @@
+import { asyncAtom } from "@/lib/jotai";
 import { follow, handleFollowResult } from "@/services/follow";
 import { atom } from "jotai";
-import { atomWithRefresh, selectAtom, unwrap } from "jotai/utils";
+import { selectAtom } from "jotai/utils";
 import { settingsAtom } from "./settings";
 
-export const inboxesAsyncAtom = atomWithRefresh(async () => {
+export const inboxesAsyncAtom = asyncAtom(async () => {
   const r = await follow.GET("/inboxes/list");
   return handleFollowResult(r);
 });
 
-export const inboxesAtom = unwrap(inboxesAsyncAtom, (prev) => prev);
+export const inboxesAtom = inboxesAsyncAtom.unwrap();
 export const defaultInboxIdAtom = selectAtom(settingsAtom, (s) => s.DefaultInbox);
 
 export const defaultInboxAtom = atom((get) => {

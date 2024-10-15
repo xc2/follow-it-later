@@ -1,4 +1,6 @@
+import { baseUrl, type paths } from "@/gen/follow";
 import { destructPromise } from "@/lib/lang";
+import createClient, { type ClientOptions, type FetchResponse } from "openapi-fetch";
 
 export interface FollowError extends Error {
   response: Response;
@@ -42,6 +44,34 @@ export async function handleFollowResponse<T>(res: Response | PromiseLike<Respon
   const data = handleFollowData<T>(json, res);
   if (!ok) {
     throw makeHttpError(res, { name: "JSONError", message: "Cannot decode the response message." });
+  }
+  return data;
+}
+
+export function createFollowClient(clientOptions?: ClientOptions) {
+  const mani = chrome.runtime.getManifest();
+  return createClient<paths>({
+    baseUrl,
+    mode: "cors",
+    credentials: "include",
+    ...clientOptions,
+    headers: {
+      "X-User-Agent": `${mani.name.replace(/ +/g, "-")}/${mani.version} (+${mani.homepage_url})`,
+      ...clientOptions?.headers,
+    },
+  });
+}
+type ExtractData<T> = T extends { data: infer K } ? K : never;
+export async function handleFollowResult<T extends FetchResponse<any, any, any>>(
+  res: T | PromiseLike<T>
+): Promise<ExtractData<T["data"]>> {
+  res = await res;
+  const data = handleFollowData<ExtractData<T["data"]>>(res.data, res.response);
+  if (res.error) {
+    throw makeHttpError(res.response, {
+      name: "JSONError",
+      message: "Cannot decode the response message.",
+    });
   }
   return data;
 }
