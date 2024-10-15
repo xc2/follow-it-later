@@ -1,6 +1,10 @@
 import logoUrl from "../../icons/icon-128.png?url";
+import _ from "../content/placeholder?script";
 import _readModuleUrl from "../content/read.ts?script&module";
 import _toastModuleUrl from "../content/toast.tsx?script&module";
+if (import.meta.env.DEV) {
+  console.log(_);
+}
 
 export const readModuleUrl = chrome.runtime.getURL(_readModuleUrl);
 export const toastModuleUrl = chrome.runtime.getURL(_toastModuleUrl);

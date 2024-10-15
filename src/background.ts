@@ -41,6 +41,7 @@ async function purgeOutdatedCaches() {
   }
 }
 const FollowMenuItem = createContextMenu<{ inbox: InboxItem }>({
+  id: "one-click-sending-to-inbox",
   contexts: ["page"],
   onclick: async (info, tab) => {
     const inbox = info.data?.inbox!;
@@ -59,6 +60,7 @@ async function showPopup() {
 }
 
 const ActionMenuItem = createContextMenu({
+  id: "settings",
   contexts: ["action"],
   title: "Settings",
   onclick: () => {
