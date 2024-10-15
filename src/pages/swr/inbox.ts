@@ -2,7 +2,7 @@ import { handleInternalResult, internal } from "@/services/internal";
 import { useCallback } from "react";
 import useSWR from "swr";
 
-const InboxesReqKey = "inboxes";
+export const InboxesReqKey = "follow:inboxes";
 
 export function useInboxes() {
   const swr = useSWR(InboxesReqKey, async (url) => {

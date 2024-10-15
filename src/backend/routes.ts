@@ -33,6 +33,11 @@ export const RefreshInboxes = createRoute({
   path: "/inboxes",
   responses: res(z.array(InboxItemSchema)),
 });
+export const GetAuthState = createRoute({
+  method: "get",
+  path: "/auth-state",
+  responses: res(z.object({ logged: z.boolean(), changed: z.boolean().optional() })),
+});
 
 function res<T extends ZodType<unknown>>(schema: T) {
   return {
