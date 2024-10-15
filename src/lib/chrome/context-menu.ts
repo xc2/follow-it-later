@@ -1,4 +1,5 @@
 type CreateProperties<T> = Omit<chrome.contextMenus.CreateProperties, "id" | "onclick"> & {
+  id?: string;
   data?: T;
   onclick?: OnClick<T>;
 };
@@ -21,11 +22,8 @@ export function createContextMenu<T>(options?: CreateProperties<T>) {
     title: "Not ready",
     ...rest,
   };
-  let _lastTask: PromiseLike<any> | null = null;
-  const id = chrome.contextMenus.create({
-    ..._untrustedInfo,
-    id: Math.random().toString(36).slice(2),
-  });
+  const id = options?.id ?? Math.random().toString(36).slice(2);
+  chrome.contextMenus.create({ ..._untrustedInfo, id });
 
   const listener = (info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
     if (!tab) return;
