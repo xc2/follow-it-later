@@ -1,11 +1,13 @@
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "next-themes";
+import { useLayoutEffect } from "react";
 import { createRoot } from "react-dom/client";
 import type { ExternalToast } from "sonner";
+import { toast as sonner } from "sonner";
 import css from "./toast.css?inline";
 
 function getContainer() {
-  const id = "follow-it-later-root";
+  const id = `root-${chrome.runtime.id}`;
   let root = document.getElementById(id);
   if (root) return root.shadowRoot || root.attachShadow({ mode: "open" });
   root = document.createElement("div");
@@ -14,46 +16,54 @@ function getContainer() {
   document.body.appendChild(root);
   return root.shadowRoot || root.attachShadow({ mode: "open" });
 }
+function OnReady({ onReady }: { onReady: () => any }) {
+  useLayoutEffect(() => {
+    return onReady();
+  }, []);
+  return null;
+}
 
-function prepareToaster() {
+async function prepareToaster(): Promise<void> {
   const container = getContainer();
-  const id = "follow-it-later-toaster";
-  if (!container.querySelector(`#${id}`)) {
-    const toaster = document.createElement("div");
-    toaster.id = id;
-    container.appendChild(toaster);
-    const style = document.createElement("style");
-    style.textContent = css;
-    container.appendChild(style);
-    for (const s of Array.from(document.head.querySelectorAll<HTMLStyleElement>("style"))) {
-      if (s.textContent?.includes("[data-sonner-toaster]")) {
-        container.appendChild(s.cloneNode(true));
-      }
+  const id = `toaster-${chrome.runtime.id}`;
+  if (container.querySelector(`#${id}`)) return;
+  const toaster = document.createElement("div");
+  toaster.id = id;
+  container.appendChild(toaster);
+  const style = document.createElement("style");
+  style.textContent = css;
+  container.appendChild(style);
+  for (const s of Array.from(document.head.querySelectorAll<HTMLStyleElement>("style"))) {
+    if (s.textContent?.includes("[data-sonner-toaster]")) {
+      container.appendChild(s.cloneNode(true));
     }
+  }
+  return new Promise((resolve, reject) => {
     createRoot(toaster).render(
       <ThemeProvider attribute="data-ignore-theme">
         <Toaster />
+        <OnReady
+          onReady={() => {
+            resolve();
+          }}
+        />
       </ThemeProvider>
     );
-  }
+  });
 }
 
 export async function toast(
   message: string,
   data?: ExternalToast & { type?: "success" | "info" | "warning" | "error" | "loading" }
 ) {
-  prepareToaster();
-  const { toast: _showToast } = await import("sonner");
-  const showToast = _showToast[data?.type || "info"] || _showToast;
+  await prepareToaster();
+  const showToast = sonner[data?.type || "info"] || sonner;
   return showToast(message, {
     position: "top-center",
     ...data,
   });
 }
-export async function dismiss(id: number | string) {
-  const { toast } = await import("sonner");
-  return toast.dismiss(id);
-}
+export const dismiss = sonner.dismiss;
 
 export type Export = {
   toast: typeof toast;
