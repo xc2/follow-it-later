@@ -23,7 +23,12 @@ export function createContextMenu<T>(options?: CreateProperties<T>) {
     ...rest,
   };
   const id = options?.id ?? Math.random().toString(36).slice(2);
-  chrome.contextMenus.create({ ..._untrustedInfo, id });
+  chrome.contextMenus.create({ ..._untrustedInfo, id }, () => {
+    const err = Reflect.get(chrome.runtime, "lastError");
+    if (import.meta.env.DEV && err) {
+      console.warn(err);
+    }
+  });
 
   const listener = (info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
     if (!tab) return;

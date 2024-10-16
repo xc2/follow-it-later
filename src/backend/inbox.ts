@@ -13,7 +13,8 @@ export async function sendToInbox({
   tabId: number;
   mute?: boolean;
 }) {
-  const inbox = container.get(inboxesAtom)?.find((v) => v.id === inboxId);
+  const inboxes = await container.get(inboxesAtom);
+  const inbox = inboxes?.find((v) => v.id === inboxId);
 
   return withNotification({
     tabId: tabId,

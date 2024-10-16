@@ -1,21 +1,17 @@
 import { app } from "@/backend/app";
 import { defaultInboxAtom } from "@/backend/atoms";
+import { purgeOutdatedCaches } from "@/backend/cache";
+import { container } from "@/backend/container";
 import { sendToInbox } from "@/backend/inbox";
-import { baseUrl as FollowBaseUrl } from "@/gen/follow";
 import { baseUrl as InternalBaseUrl } from "@/gen/internal";
 import { createContextMenu } from "@/lib/chrome/context-menu";
+import { destructPromise } from "@/lib/lang";
 import { actionPage } from "@/lib/urls";
 import type { InboxItem } from "@/types";
 import type { Hono } from "hono";
 import { handle } from "hono/service-worker";
-import { StaleWhileRevalidate } from "workbox-strategies";
-import { container } from "./backend/container";
 
 declare const self: ServiceWorkerGlobalScope;
-
-const cacheName = "extension-follow-it-later";
-
-void purgeOutdatedCaches();
 
 const handleEvent = handle(app as Hono);
 
@@ -25,21 +21,8 @@ self.addEventListener("fetch", (event) => {
   if (url.pathname.startsWith(InternalBaseUrl)) {
     return handleEvent(event);
   }
-  if (url.origin === FollowBaseUrl) {
-    if (url.pathname === "/inboxes/list") {
-      return event.respondWith(new StaleWhileRevalidate({ cacheName }).handle(event));
-    }
-  }
 });
 
-async function purgeOutdatedCaches() {
-  const keys = await caches.keys();
-  for (const key of keys) {
-    if (key !== cacheName) {
-      await caches.delete(key);
-    }
-  }
-}
 const FollowMenuItem = createContextMenu<{ inbox: InboxItem }>({
   id: "one-click-sending-to-inbox",
   contexts: ["page"],
@@ -69,8 +52,8 @@ const ActionMenuItem = createContextMenu({
 });
 ActionMenuItem.show();
 
-container.sub(defaultInboxAtom, async () => {
-  const inbox = container.get(defaultInboxAtom);
+container.sub(defaultInboxAtom.unwrap(), async () => {
+  const inbox = container.get(defaultInboxAtom.unwrap());
   if (inbox) {
     FollowMenuItem.show({ data: { inbox }, title: `Send to Inbox "${inbox.title}"` });
     chrome.action.setPopup({ popup: "" });
@@ -82,9 +65,12 @@ container.sub(defaultInboxAtom, async () => {
   }
 });
 chrome.action.onClicked.addListener(async (tab) => {
-  const inbox = container.get(defaultInboxAtom);
-  if (!inbox) {
+  const [ok, inbox] = await destructPromise(container.get(defaultInboxAtom));
+  if (!ok || !inbox || !tab.url || !/^http/.test(tab.url)) {
     return showPopup();
   }
+
   void sendToInbox({ inboxId: inbox.id, tabId: tab.id! });
 });
+
+void purgeOutdatedCaches();

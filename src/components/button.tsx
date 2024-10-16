@@ -1,7 +1,7 @@
+import { useAsync } from "@/components/hooks/use-async";
+import { useAsyncStateWithPeace } from "@/components/hooks/use-async-state-with-peace";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useAsync } from "@/lib/use-async";
-import { useAsyncStateWithPeace } from "@/lib/use-async-state-with-peace";
 import { cn } from "@/lib/utils";
 import { CheckIcon, ExclamationTriangleIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { TooltipPortal } from "@radix-ui/react-tooltip";
@@ -10,6 +10,12 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
 export const MotionButton = m.create(Button);
 export type MotionButtonProps = ComponentPropsWithoutRef<typeof MotionButton>;
+export type AsyncButtonProps = MotionButtonProps & {
+  end?: ReactNode;
+  start?: ReactNode;
+  statePosition?: "start" | "end";
+  handler?: () => PromiseLike<any>;
+};
 
 export function AsyncButton({
   handler,
@@ -20,12 +26,7 @@ export function AsyncButton({
   end,
   statePosition = "start",
   ...props
-}: MotionButtonProps & {
-  end?: ReactNode;
-  start?: ReactNode;
-  statePosition?: "start" | "end";
-  handler?: () => PromiseLike<any>;
-}) {
+}: AsyncButtonProps) {
   const [send, { loading, dataReady, error }] = useAsync(handler || (async () => {}));
 
   const iconClassNames = `size-4`;

@@ -24,7 +24,7 @@ const getManifest = defineManifest(async (env) => {
     host_permissions: [`${FollowApiConfig.root}/*`],
     homepage_url: "https://tldr.ws/followit",
     background: {
-      service_worker: "src/background.ts",
+      service_worker: "src/backend/entrypoint.ts",
     },
     icons: {
       16: "icons/icon-16.png",
@@ -43,7 +43,6 @@ export default defineConfig({
   clearScreen: false,
 
   build: {
-    sourcemap: true,
     rollupOptions: {
       input: {
         popup: "@/popup.html",

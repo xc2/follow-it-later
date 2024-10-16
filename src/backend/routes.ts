@@ -47,10 +47,17 @@ function res<T extends ZodType<unknown>>(schema: T) {
       },
       description: schema.description || "",
     },
-    ...[400, 401, 403, 404, 500].reduce((acc, code) => {
-      acc[code] = { description: "", content: { "application/json": { schema: ErrorSchema } } };
-      return acc;
-    }, {} as any),
+    ...[400, 401, 403, 404, 422, 500].reduce(
+      (acc, code) => {
+        // @ts-expect-error
+        acc[code] = {
+          description: "",
+          content: { "application/json": { schema: ErrorSchema } },
+        };
+        return acc;
+      },
+      {} as Record<400 | 401 | 403 | 404 | 422 | 500, RouteConfig["responses"][number]>
+    ),
   } satisfies RouteConfig["responses"];
 }
 function req<T extends ZodType<unknown>>(schema: T) {
