@@ -1,11 +1,10 @@
-import { inboxesAsyncAtom } from "@/backend/atoms/inboxes";
+import { inboxesAtom } from "@/backend/atoms/inboxes";
 import { isFollowError } from "@/lib/follow";
-import { atom } from "jotai";
-import { unwrap } from "jotai/utils";
+import { asyncAtom } from "@/lib/jotai";
 
-export const authStateAsyncAtom = atom(async (get) => {
+export const authStateAtom = asyncAtom(async (get) => {
   try {
-    await get(inboxesAsyncAtom);
+    await get(inboxesAtom);
     return true;
   } catch (e) {
     if (isFollowError(e) && e.name === "AuthError") {
@@ -14,5 +13,3 @@ export const authStateAsyncAtom = atom(async (get) => {
     return true;
   }
 });
-
-export const authStateAtom = unwrap(authStateAsyncAtom, (prev) => prev);

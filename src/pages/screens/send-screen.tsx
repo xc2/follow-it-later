@@ -1,5 +1,5 @@
 import type { InboxItem } from "@/backend/entities";
-import { AsyncButton } from "@/components/button";
+import { AsyncButton, type AsyncButtonProps } from "@/components/button";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollBar } from "@/components/ui/scroll-area";
@@ -12,7 +12,7 @@ import { useAuthState } from "@/pages/swr/auth-state";
 import { useInboxes } from "@/pages/swr/inbox";
 import { useSettings } from "@/pages/swr/settings";
 import { handleInternalResult, internal } from "@/services/internal";
-import { DrawingPinFilledIcon, DrawingPinIcon, SymbolIcon } from "@radix-ui/react-icons";
+import { DrawingPinFilledIcon, DrawingPinIcon, PlusIcon, SymbolIcon } from "@radix-ui/react-icons";
 import { ScrollArea, ScrollAreaCorner, ScrollAreaViewport } from "@radix-ui/react-scroll-area";
 import { TooltipPortal } from "@radix-ui/react-tooltip";
 import { m } from "framer-motion";
@@ -103,35 +103,37 @@ export function SendScreen() {
   }, [inboxesSWR.data, LastUsedInbox, DefaultInbox]);
   const authState = authSWR.data?.logged;
 
-  return (
-    <>
-      <CardHeader>
-        <div className="flex items-center">
-          <CardTitle className="text-xl">Send to Inbox</CardTitle>
-          <div className="ml-auto">
-            {authState === false && sortedInboxes.length > 0 ? (
-              <Login purpose="" />
-            ) : inboxesSWR.isLoading || authSWR.isLoading || authState === false ? null : (
-              <AsyncButton
-                size="sm"
-                type="button"
-                variant="default"
-                handler={() => inboxesSrv.refresh()}
-                start={<SymbolIcon className="size-4" />}
-              >
-                Refresh Inboxes
-              </AsyncButton>
-            )}
+  const renderRefreshButton = (props: Partial<AsyncButtonProps>) => (
+    <AsyncButton
+      type="button"
+      variant="default"
+      handler={() => inboxesSrv.refresh()}
+      start={<SymbolIcon className="size-4" />}
+      {...props}
+    >
+      Refresh Inboxes
+    </AsyncButton>
+  );
+
+  if (sortedInboxes.length > 0) {
+    return (
+      <>
+        <CardHeader>
+          <div className="flex items-center">
+            <CardTitle className="text-xl">Send to Inbox</CardTitle>
+            <div className="ml-auto">
+              {authState === false ? (
+                <Login purpose="" />
+              ) : inboxesSWR.isLoading || authSWR.isLoading ? null : (
+                renderRefreshButton({ size: "sm" })
+              )}
+            </div>
           </div>
-        </div>
-        {sortedInboxes.length > 0 && (
           <CardDescription>
             A readable version of this page will be sent to your Follow's inbox.
           </CardDescription>
-        )}
-      </CardHeader>
-      <CardContent>
-        {sortedInboxes.length > 0 ? (
+        </CardHeader>
+        <CardContent>
           <ScrollArea className="max-h-52 -mr-4 pr-4">
             <ScrollAreaViewport className="max-h-52">
               <ul className="flex flex-col gap-3">
@@ -147,7 +149,15 @@ export function SendScreen() {
             <ScrollBar />
             <ScrollAreaCorner />
           </ScrollArea>
-        ) : inboxesSWR.isLoading || authSWR.isLoading ? (
+        </CardContent>
+      </>
+    );
+  }
+  if (inboxesSWR.isLoading || authSWR.isLoading) {
+    return (
+      <>
+        <CardHeader></CardHeader>
+        <CardContent>
           <div className="flex flex-col space-y-5">
             <div className="space-y-2">
               <Skeleton className="h-4 w-[50px] rounded-xl" />
@@ -155,11 +165,42 @@ export function SendScreen() {
             </div>
             <Skeleton className="h-10 w-[150px]" />
           </div>
-        ) : authState === false ? (
-          <Login purpose="Log in Follow is required to retrieve the inbox list." />
-        ) : sortedInboxes.length === 0 ? (
-          <div className="flex flex-col space-y-5"></div>
-        ) : null}
+        </CardContent>
+      </>
+    );
+  }
+  if (authState === false) {
+    return (
+      <>
+        <CardHeader>
+          <CardTitle className="text-base">Login</CardTitle>
+          <CardDescription>Log in Follow is required to retrieve the inbox list.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Login purpose="" />
+        </CardContent>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <CardHeader>
+        <CardTitle className="text-base">No inbox found</CardTitle>
+        <CardDescription>
+          You don't have any inbox yet. Create one to start sending pages to your Follow inbox.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-2 mt-2">
+          <Button asChild size="sm">
+            <a href="https://app.follow.is/discover?type=inbox" target="_blank" rel="noreferrer">
+              <PlusIcon className="size-4 mr-2" />
+              Create one
+            </a>
+          </Button>
+          {renderRefreshButton({ variant: "ghost", size: "sm" })}
+        </div>
       </CardContent>
     </>
   );

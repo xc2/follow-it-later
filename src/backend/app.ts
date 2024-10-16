@@ -1,5 +1,4 @@
-import { inboxesAsyncAtom, inboxesAtom, settingsAtom } from "@/backend/atoms";
-import { authStateAsyncAtom, authStateAtom } from "@/backend/atoms/follow-client";
+import { authStateAtom, inboxesAtom, settingsAtom } from "@/backend/atoms";
 import { container } from "@/backend/container";
 import { sendToInbox } from "@/backend/inbox";
 import { baseUrl } from "@/gen/internal";
@@ -40,23 +39,21 @@ app.openapi(r.SendPage, async (c) => {
 });
 
 app.openapi(r.GetInboxes, async (c) => {
-  return c.json(container.get(inboxesAtom), 200);
+  return c.json(await container.get(inboxesAtom), 200);
 });
 
 app.openapi(r.RefreshInboxes, async (c) => {
-  container.set(inboxesAsyncAtom);
-  return c.json(await container.get(inboxesAsyncAtom), 200);
+  container.set(inboxesAtom);
+  return c.json(await container.get(inboxesAtom), 200);
 });
 
 app.openapi(r.GetAuthState, async (c) => {
-  let authState = container.get(authStateAtom);
-  let needRefresh = false;
-  if (authState === false) {
-    container.set(inboxesAsyncAtom);
-    authState = await container.get(authStateAsyncAtom);
-    needRefresh = authState === true;
-  } else if (authState === undefined) {
-    authState = await container.get(authStateAsyncAtom);
+  const authState = await container.get(authStateAtom);
+
+  if (!authState) {
+    container.set(inboxesAtom);
+    const newAuthState = await container.get(authStateAtom);
+    return c.json({ logged: newAuthState, changed: newAuthState !== authState }, 200);
   }
-  return c.json({ logged: authState, changed: needRefresh }, 200);
+  return c.json({ logged: authState }, 200);
 });

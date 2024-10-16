@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { useLatestFn } from "./use-latest-fn";
+import { useLatestFn } from "./use-latest";
 
 type PromiseDataType<T> = T extends PromiseLike<infer Data> ? Data : never;
 
