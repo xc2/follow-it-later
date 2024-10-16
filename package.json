@@ -64,6 +64,9 @@
     "overrides": {
       "@webcomponents/custom-elements": "link:./empty",
       "rollup@2.78.1": "^2.79.2"
+    },
+    "patchedDependencies": {
+      "@crxjs/vite-plugin": "patches/@crxjs__vite-plugin.patch"
     }
   }
 }

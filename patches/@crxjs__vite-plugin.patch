@@ -1,0 +1,21 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+index c543f3e83ffb5210495ac735f9a906e59b9da491..d40cc9536ff6491702a7ae40b85a024f88a1adef 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -1838,8 +1838,6 @@ const pluginWebAccessibleResources = () => {
+           matches: ["<all_urls>"],
+           // all resources are web accessible
+           resources: ["**/*", "*"],
+-          // change the extension origin on every reload
+-          use_dynamic_url: true
+         };
+         if (browser === "firefox") {
+           delete war.use_dynamic_url;
+@@ -1921,7 +1919,6 @@ const pluginWebAccessibleResources = () => {
+                   const resource = {
+                     matches: isDynamicScript ? [...dynamicScriptMatches] : matches,
+                     resources: [...assets, ...imports],
+-                    use_dynamic_url: isDynamicScript ? dynamicScriptDynamicUrl : true
+                   };
+                   if (isDynamicScript || !injectCss) {
+                     resource.resources.push(...css);
