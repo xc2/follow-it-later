@@ -1,9 +1,8 @@
 import { baseUrl, type paths } from "@/gen/internal";
 import createClient, { type FetchResponse } from "openapi-fetch";
-import { FollowApiConfig } from "../../scripts/follow-api.config";
 
 export const internal = createClient<paths>({
-  baseUrl: new URL(baseUrl, /* actually not used */ FollowApiConfig.root).href,
+  baseUrl: chrome.runtime.getURL(baseUrl),
   headers: {},
 });
 

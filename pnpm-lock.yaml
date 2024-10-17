@@ -10,7 +10,7 @@ overrides:
 
 patchedDependencies:
   '@crxjs/vite-plugin':
-    hash: 6y5bo5lqellg5dwpji7zksl3a4
+    hash: z2g6ept2dyi6gn2gbj4utdimau
     path: patches/@crxjs__vite-plugin.patch
 
 importers:
@@ -22,7 +22,7 @@ importers:
         version: 1.9.3
       '@crxjs/vite-plugin':
         specifier: 2.0.0-beta.25
-        version: 2.0.0-beta.25(patch_hash=6y5bo5lqellg5dwpji7zksl3a4)
+        version: 2.0.0-beta.25(patch_hash=z2g6ept2dyi6gn2gbj4utdimau)
       '@hono/zod-openapi':
         specifier: ^0.16.4
         version: 0.16.4(hono@4.6.5)(zod@3.23.8)
@@ -2218,7 +2218,7 @@ snapshots:
   '@biomejs/cli-win32-x64@1.9.3':
     optional: true
 
-  '@crxjs/vite-plugin@2.0.0-beta.25(patch_hash=6y5bo5lqellg5dwpji7zksl3a4)':
+  '@crxjs/vite-plugin@2.0.0-beta.25(patch_hash=z2g6ept2dyi6gn2gbj4utdimau)':
     dependencies:
       '@rollup/pluginutils': 4.2.1
       '@webcomponents/custom-elements': link:empty

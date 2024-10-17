@@ -1,4 +1,4 @@
-import { ErrorSchema, InboxItemSchema, SettingsSchema } from "@/backend/entities";
+import { ErrorSchema, FeedSchema, InboxItemSchema, SettingsSchema } from "@/backend/entities";
 import { type RouteConfig, createRoute, z } from "@hono/zod-openapi";
 import type { ZodType } from "zod";
 
@@ -37,6 +37,12 @@ export const GetAuthState = createRoute({
   method: "get",
   path: "/auth-state",
   responses: res(z.object({ logged: z.boolean(), changed: z.boolean().optional() })),
+});
+export const DiscoverFeeds = createRoute({
+  method: "get",
+  path: "/discover/feeds",
+  request: { query: z.object({ url: z.string() }) },
+  responses: res(z.array(z.object({ feed: FeedSchema.optional(), docs: z.string().optional() }))),
 });
 
 function res<T extends ZodType<unknown>>(schema: T) {

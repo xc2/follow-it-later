@@ -33,7 +33,6 @@ const getManifest = defineManifest(async (env) => {
     },
     action: {
       default_title: "Follow it later",
-      // default_popup: "src/popup.html",
     },
   };
 });

@@ -25,6 +25,9 @@ export async function sendToInbox({
     handler: async () => {
       const payload = await readClient.for(tabId).getInboxData();
       if (import.meta.env.DEV) {
+        console.log("Send to inbox", payload);
+      }
+      if (import.meta.env.DEV) {
         await new Promise((resolve, reject) =>
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000, new Error("Test error"))
         );
