@@ -74,3 +74,6 @@ chrome.action.onClicked.addListener(async (tab) => {
 });
 
 void purgeOutdatedCaches();
+if (import.meta.env.DEV) {
+  chrome.action.setBadgeText({ text: "DEV" });
+}
