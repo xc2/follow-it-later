@@ -6,6 +6,7 @@ import { sendToInbox } from "@/backend/inbox";
 import { baseUrl as InternalBaseUrl } from "@/gen/internal";
 import { createContextMenu } from "@/lib/chrome/context-menu";
 import { destructPromise } from "@/lib/lang";
+import { createMessageFetchEvent } from "@/lib/message-fetch/backend";
 import { actionPage } from "@/lib/urls";
 import type { InboxItem } from "@/types";
 import type { Hono } from "hono";
@@ -14,14 +15,22 @@ import { handle } from "hono/service-worker";
 declare const self: ServiceWorkerGlobalScope;
 
 const handleEvent = handle(app as Hono);
+chrome.runtime.onMessage.addListener((message, sender, respond) => {
+  const fetchEvent = createMessageFetchEvent(message, sender, respond);
+  if (fetchEvent) {
+    handleFetchEvent.call(self, fetchEvent);
+    return true;
+  }
+});
 
-self.addEventListener("fetch", (event) => {
+function handleFetchEvent(this: ServiceWorkerGlobalScope, event: FetchEvent) {
   const { request } = event;
   const url = new URL(request.url);
   if (url.pathname.startsWith(InternalBaseUrl)) {
     return handleEvent(event);
   }
-});
+}
+self.addEventListener("fetch", handleFetchEvent);
 
 const FollowMenuItem = createContextMenu<{ inbox: InboxItem }>({
   id: "one-click-sending-to-inbox",

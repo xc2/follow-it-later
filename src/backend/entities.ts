@@ -26,3 +26,41 @@ export const ErrorSchema = z
     name: z.string().optional(),
   })
   .openapi("GeneralException");
+
+export const UserSchema = z
+  .object({
+    id: z.string(),
+    name: z.string().optional().nullable(),
+    emailVerified: z.string().optional().nullable(),
+    image: z.string().optional().nullable(),
+    handle: z.string().optional().nullable(),
+    createdAt: z.string(),
+  })
+  .openapi("User");
+
+export const FeedSchema = z
+  .object({
+    id: z.string(),
+    title: z.string().optional().nullable(),
+    description: z.string().optional().nullable(),
+    image: z.string().optional().nullable(),
+    ownerUserId: z.string().optional().nullable(),
+    owner: z
+      .object({
+        id: z.string(),
+        name: z.string().optional().nullable(),
+        emailVerified: z.string().optional().nullable(),
+        image: z.string().optional().nullable(),
+        handle: z.string().optional().nullable(),
+        createdAt: z.string(),
+      })
+      .optional()
+      .nullable(),
+    type: z.literal("feed"),
+    url: z.string(),
+    siteUrl: z.string().optional().nullable(),
+    errorMessage: z.string().optional().nullable(),
+    errorAt: z.string().optional().nullable(),
+    tipUsers: z.array(UserSchema).optional().nullable(),
+  })
+  .openapi("Feed");

@@ -1,4 +1,5 @@
 import { authStateAtom, inboxesAtom, settingsAtom } from "@/backend/atoms";
+import { discoverAtom } from "@/backend/atoms/discover";
 import { container } from "@/backend/container";
 import { sendToInbox } from "@/backend/inbox";
 import { baseUrl } from "@/gen/internal";
@@ -11,6 +12,9 @@ export const app = new OpenAPIHono({
     if (!result.success) {
       return c.json({ ok: false, message: result.error.message, name: "VALIDATE_ERROR" }, 422);
     }
+  },
+  getPath: (req) => {
+    return new URL(req.url, "stub://stub").pathname;
   },
 }).basePath(baseUrl);
 app.onError((err, c) => {
@@ -56,4 +60,9 @@ app.openapi(r.GetAuthState, async (c) => {
     return c.json({ logged: newAuthState, changed: newAuthState !== authState }, 200);
   }
   return c.json({ logged: authState }, 200);
+});
+
+app.openapi(r.DiscoverFeeds, async (c) => {
+  const { url } = c.req.query();
+  return c.json(await container.get(discoverAtom(url)), 200);
 });

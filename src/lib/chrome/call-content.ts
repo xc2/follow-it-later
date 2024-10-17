@@ -27,7 +27,7 @@ export function getContentClient<T extends {}>(scriptUrl: string) {
           }
           const [result] = await chrome.scripting.executeScript({
             target: { tabId: _tabId! },
-            func: async (scriptUrl: string, method: any, args: any, preflights: string[]) => {
+            func: async (scriptUrl, method, args, preflights) => {
               function __vite__injectQuery(a: any) {
                 return a;
               }
@@ -46,7 +46,7 @@ export function getContentClient<T extends {}>(scriptUrl: string) {
                 throw e;
               }
             },
-            args: [scriptUrl, p, args, preflights],
+            args: [scriptUrl, p, args, preflights] as const,
           });
           return result.result;
         }
