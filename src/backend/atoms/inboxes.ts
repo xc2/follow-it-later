@@ -7,7 +7,7 @@ import { settingsAtom } from "./settings";
 export const inboxesAtom = asyncAtom(async (_, options) => {
   const r = await follow.GET("/inboxes/list", {
     signal: options.signal,
-    fetch: options.initial ? fetchers.cacheFirst : fetchers.networkOnly,
+    fetch: options.initial ? fetchers.cacheFirst : fetchers.networkFirst,
   });
   try {
     const data = await handleFollowResult(r);
