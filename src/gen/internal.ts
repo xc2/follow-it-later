@@ -35,12 +35,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 401: {
@@ -48,12 +43,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 403: {
@@ -61,12 +51,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 404: {
@@ -74,12 +59,15 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
+                    };
+                };
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 500: {
@@ -87,12 +75,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
             };
@@ -134,12 +117,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 401: {
@@ -147,12 +125,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 403: {
@@ -160,12 +133,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 404: {
@@ -173,12 +141,15 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
+                    };
+                };
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 500: {
@@ -186,12 +157,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
             };
@@ -218,12 +184,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 401: {
@@ -231,12 +192,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 403: {
@@ -244,12 +200,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 404: {
@@ -257,12 +208,15 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
+                    };
+                };
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 500: {
@@ -270,12 +224,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
             };
@@ -316,12 +265,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 401: {
@@ -329,12 +273,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 403: {
@@ -342,12 +281,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 404: {
@@ -355,12 +289,15 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
+                    };
+                };
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 500: {
@@ -368,12 +305,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
             };
@@ -404,12 +336,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 401: {
@@ -417,12 +344,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 403: {
@@ -430,12 +352,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 404: {
@@ -443,12 +360,15 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
+                    };
+                };
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 500: {
@@ -456,12 +376,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
             };
@@ -509,12 +424,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 401: {
@@ -522,12 +432,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 403: {
@@ -535,12 +440,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 404: {
@@ -548,12 +448,15 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
+                    };
+                };
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
                 500: {
@@ -561,12 +464,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @enum {boolean} */
-                            ok: false;
-                            message: string;
-                            name?: string;
-                        };
+                        "application/json": components["schemas"]["GeneralException"];
                     };
                 };
             };
@@ -581,6 +479,12 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        GeneralException: {
+            /** @enum {boolean} */
+            ok: false;
+            message: string;
+            name?: string;
+        };
         InboxItem: {
             id: string;
             title: string;

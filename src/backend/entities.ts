@@ -19,8 +19,10 @@ export const InboxItemSchema = z
   .openapi("InboxItem");
 export type InboxItem = z.infer<typeof InboxItemSchema>;
 
-export const ErrorSchema = z.object({
-  ok: z.literal(false),
-  message: z.string(),
-  name: z.string().optional(),
-});
+export const ErrorSchema = z
+  .object({
+    ok: z.literal(false),
+    message: z.string(),
+    name: z.string().optional(),
+  })
+  .openapi("GeneralException");
