@@ -1,5 +1,6 @@
 .jj
 *.zip
+/dev/
 ### VisualStudioCode template
 .vscode/*
 !.vscode/settings.json

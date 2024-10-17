@@ -47,7 +47,8 @@ export async function discoverRSSLinks(url: string): Promise<FoundRSSLink[]> {
         } as any;
       })
       .filter((item): item is FoundRSSLink => !!item.href);
-  } catch {
+  } catch (e) {
+    console.warn("Failed to discover feeds", e);
     return [];
   } finally {
     clearTimeout(timer);

@@ -8,13 +8,13 @@ import { FollowApiConfig } from "./scripts/follow-api.config";
 const getManifest = defineManifest(async (env) => {
   const isDev = env.mode === "development";
   const VERSION = process.env.EXTENSION_VERSION;
-  if (!isDev && !VERSION) {
-    throw new Error("EXTENSION_VERSION is required in production mode.");
+  if (!VERSION && ![undefined, null, "0", "false"].includes(process.env.CI)) {
+    throw new Error("EXTENSION_VERSION is required in CI build");
   }
   return {
     manifest_version: 3,
     name: isDev ? "[Dev] Follow it later" : "Follow it later",
-    version: isDev ? "0.0.0" : VERSION!,
+    version: VERSION || "0.0.0",
     description: "Send a page to the inbox of Follow to read and subscribe later.",
     permissions: ["activeTab", "scripting", "storage", "contextMenus"],
     /**
@@ -37,38 +37,42 @@ const getManifest = defineManifest(async (env) => {
   };
 });
 
-export default defineConfig({
-  plugins: [react({}), crx({ manifest: getManifest, contentScripts: { injectCss: true } })],
-  clearScreen: false,
+export default defineConfig((env) => {
+  const isDev = env.mode === "development";
+  return {
+    plugins: [react({}), crx({ manifest: getManifest, contentScripts: { injectCss: true } })],
+    clearScreen: false,
 
-  build: {
-    rollupOptions: {
-      input: {
-        popup: "@/popup.html",
-      },
-      plugins: [
-        rollupPluginLicense({
-          thirdParty: {
-            output: "dist/dependencies.txt",
-          },
-        }),
-      ],
-      output: {
-        assetFileNames: "assets/[name][extname]",
-        chunkFileNames: "assets/[name].js",
+    build: {
+      outDir: isDev ? "dev" : "dist",
+      rollupOptions: {
+        input: {
+          popup: "@/popup.html",
+        },
+        plugins: [
+          rollupPluginLicense({
+            thirdParty: {
+              output: "dist/dependencies.txt",
+            },
+          }),
+        ],
+        output: {
+          assetFileNames: "assets/[name][extname]",
+          chunkFileNames: "assets/[name].js",
+        },
       },
     },
-  },
-  server: {
-    port: 5173,
-    strictPort: true,
-    hmr: {
+    server: {
       port: 5173,
+      strictPort: true,
+      hmr: {
+        port: 5173,
+      },
     },
-  },
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
     },
-  },
+  };
 });
