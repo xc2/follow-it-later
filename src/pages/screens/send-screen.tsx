@@ -32,11 +32,7 @@ function SendingButton({ item }: { item: InboxItem }) {
             variant="ghost"
             size="sm"
             asChild
-            className={cn(
-              "cursor-auto -mr-3",
-              !isDefault &&
-                "opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto"
-            )}
+            className={cn("cursor-auto -mr-3", !isDefault && "hidden group-hover:flex")}
             onClick={(e) => {
               e.stopPropagation();
               e.nativeEvent.stopImmediatePropagation();
@@ -78,8 +74,10 @@ function SendingButton({ item }: { item: InboxItem }) {
         settingsSWR.mutate();
       }}
     >
-      <span>{item.title}</span>
-      <span className="text-zinc-400 text-xs">{item.id}</span>
+      <span className="inline-flex gap-2 items-center leading-[14px] min-w-0 text-ellipsis overflow-hidden whitespace-nowrap">
+        <span className="leading-[inherit]">{item.title}</span>
+        <span className="text-zinc-400 text-xs leading-[inherit]">{item.id}</span>
+      </span>
     </AsyncButton>
   );
 }

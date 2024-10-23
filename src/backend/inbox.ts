@@ -27,7 +27,8 @@ export async function sendToInbox({
       if (import.meta.env.DEV) {
         console.log("Send to inbox", payload);
       }
-      if (false && import.meta.env.DEV) {
+      if (inbox?.id === "follow-it-later-test-inbox") {
+        // this is a test inbox of the developer, we do not actually send the data to the inbox
         await new Promise((resolve, reject) =>
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000, new Error("Test error"))
         );

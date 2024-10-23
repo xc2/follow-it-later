@@ -13,6 +13,7 @@ import type { Hono } from "hono";
 import { handle } from "hono/service-worker";
 
 declare const self: ServiceWorkerGlobalScope;
+const mani = chrome.runtime.getManifest();
 
 const handleEvent = handle(app as Hono);
 chrome.runtime.onMessage.addListener((message, sender, respond) => {
@@ -84,5 +85,8 @@ chrome.action.onClicked.addListener(async (tab) => {
 
 void purgeOutdatedCaches();
 if (import.meta.env.DEV) {
+  chrome.action.setBadgeText({ text: "DEV" });
+} else if (mani.version === "0.0.0") {
+  chrome.action.setBadgeBackgroundColor({ color: "#000000" });
   chrome.action.setBadgeText({ text: "DEV" });
 }
