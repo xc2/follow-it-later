@@ -1,15 +1,16 @@
-import { inboxesAtom } from "@/backend/atoms/inboxes";
-import { isFollowError } from "@/lib/follow";
 import { asyncAtom } from "@/lib/jotai";
+import { follow } from "@/services/follow";
 
-export const authStateAtom = asyncAtom(async (get) => {
-  try {
-    await get(inboxesAtom);
-    return true;
-  } catch (e) {
-    if (isFollowError(e) && e.name === "AuthError") {
-      return false;
-    }
-    return true;
+export const csrfAtom = asyncAtom(async () => {
+  // @ts-ignore
+  const { data } = await follow.GET("/auth/csrf", {});
+  const token = (data as any)?.csrfToken;
+  const headers: any = {};
+  if (token) {
+    headers["X-CSRF-Token"] = token;
   }
+  return {
+    token,
+    headers,
+  };
 });
