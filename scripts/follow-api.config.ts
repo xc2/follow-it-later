@@ -14,6 +14,10 @@ export const FollowApiConfig = {
      * @purpose Discover RSS links to follow later
      */
     "/discover",
+    /**
+     * @purpose all post/put APIs require CSRF token
+     */
+    "/auth/csrf",
   ] as (string | string[])[],
   generatedPath: "src/gen/follow.ts",
 };
